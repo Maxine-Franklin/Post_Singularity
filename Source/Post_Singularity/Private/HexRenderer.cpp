@@ -37,8 +37,8 @@ void UHexRenderer::BeginPlay()
 	//-Determine Grid Size (x,y)
 	Owner = GetOwner(); //Get's the actor the script it attached to
 	FVector Scale;
-	Scale.X = 100 * Owner->GetActorScale().X; //Stores the actors size (x axis) [scale multiplied by 100 as default plane size is 100uu]
-	Scale.Y = 100 * Owner->GetActorScale().Y; //Stores the actors size (y axis) [scale multiplied by 100 as default plane size is 100uu]
+	Scale.X = 100 * RefPlane->GetActorScale().X; //Stores the actors size (x axis) [scale multiplied by 100 as default plane size is 100uu]
+	Scale.Y = 100 * RefPlane->GetActorScale().Y; //Stores the actors size (y axis) [scale multiplied by 100 as default plane size is 100uu]
 
 	int HexCount[2]; //Used to store y, x size of grid (stored in y, x for loop reasons)
 	float * _Scale[2] = { &Scale.Y, &Scale.X }; //Temporary pointer to store actor y, x size
@@ -77,17 +77,24 @@ void UHexRenderer::BeginPlay()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(MyArray[0].Item[0]));
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(MyArray[0].Item[1]));
 	*/
-
+	//AActor* WorldPlane;
 	UInstancedStaticMeshComponent * HexSpawn = NewObject<UInstancedStaticMeshComponent>(Owner);
 	HexSpawn->RegisterComponent();
 	HexSpawn->SetStaticMesh(HexTile);
-	//HexSpawn->SetMaterial(0, HexTile->GetMaterial(0));
 	Owner->AddInstanceComponent(HexSpawn);
 	FTransform HexPos;
-	FVector OwnerLocation = Owner->GetActorLocation();
-	OwnerLocation.Z += 1;
-	HexPos.SetLocation(OwnerLocation);
+	FVector PlaneLocation = RefPlane->GetActorLocation();
+	PlaneLocation.Z += 1;
+	HexPos.SetLocation(PlaneLocation);
+	//HexSpawn->SetMaterial(0, HexTile->GetMaterial(0));
 	HexSpawn->AddInstance(HexPos); //-Not sure if this will work as the script is an actor component
+
+	PlaneLocation.X += 50;
+	HexPos.SetLocation(PlaneLocation);
+	HexSpawn->AddInstance(HexPos); //-Not sure if this will work as the script is an actor component
+
+	PlaneLocation.Y -= 250;
+	HexSpawn[1].SetRelativeLocation(PlaneLocation);
 	/*TArray<int> tstr;
 	int tstr2[2];
 	tstr.Add(tstr2[])

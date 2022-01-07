@@ -24,6 +24,8 @@ private:
 	float HexGap[3] = { 153.0f, 76.5f, 115.0f }; //Distance between Hex tiles HexGap[0] for Row, HexGap[1] for collum x, HexGap[2] for collum y
 	UPROPERTY(EditAnywhere, Category = "Hex Tile Asset") //Makes the below variable editable in the editor
 		UStaticMesh* HexTile; //Stores a reference to the hex tile static mesh for later instancing
+	UPROPERTY(EditAnywhere, Category = "Reference Plane") //Makes the below variable editable in the editor
+		AActor* RefPlane; //Stores a reference to the hex tile static mesh for later instancing
 
 protected:
 	// Called when the game starts
