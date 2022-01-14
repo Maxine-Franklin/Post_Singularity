@@ -6,6 +6,7 @@
 #include "Engine/Engine.h"
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "TileInstancer.h"
 #include "HexRenderer.generated.h"
 
 
@@ -18,6 +19,8 @@ class POST_SINGULARITY_API UHexRenderer : public UActorComponent
 
 public:	
 	// Sets default values for this component's properties
+	TArray<TileInstancer> HexMaster;
+
 	UHexRenderer();
 private:
 	AActor* Owner;

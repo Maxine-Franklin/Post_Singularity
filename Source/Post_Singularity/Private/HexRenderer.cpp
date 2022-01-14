@@ -41,7 +41,7 @@ void UHexRenderer::BeginPlay()
 	Scale.Y = 100 * RefPlane->GetActorScale().Y; //Stores the actors size (y axis) [scale multiplied by 100 as default plane size is 100uu]
 
 	int HexCount[2]; //Used to store y, x size of grid (stored in y, x for loop reasons)
-	float * _Scale[2] = { &Scale.Y, &Scale.X }; //Temporary pointer to store actor y, x size
+	float* _Scale[2] = { &Scale.Y, &Scale.X }; //Temporary pointer to store actor y, x size
 	for (int i = 0; i < 2; i++)
 	{
 		HexCount[i] = (*_Scale[i] / HexGap[i]); //Calculates how many hex tiles can fit on the actor
@@ -54,7 +54,7 @@ void UHexRenderer::BeginPlay()
 	}
 
 	//-Spawns Hex Tiles;
-	
+
 	//vector<vector<int>> tstr;
 	//tstr[0] = vector<int>(1);
 	//tstr[0][0] = 2;
@@ -78,7 +78,7 @@ void UHexRenderer::BeginPlay()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(MyArray[0].Item[1]));
 	*/
 	//AActor* WorldPlane;
-	UInstancedStaticMeshComponent * HexSpawn = NewObject<UInstancedStaticMeshComponent>(Owner);
+	/*UInstancedStaticMeshComponent * HexSpawn = NewObject<UInstancedStaticMeshComponent>(Owner);
 	HexSpawn->RegisterComponent();
 	HexSpawn->SetStaticMesh(HexTile);
 	Owner->AddInstanceComponent(HexSpawn);
@@ -86,15 +86,57 @@ void UHexRenderer::BeginPlay()
 	FVector PlaneLocation = RefPlane->GetActorLocation();
 	PlaneLocation.Z += 1;
 	HexPos.SetLocation(PlaneLocation);
-	//HexSpawn->SetMaterial(0, HexTile->GetMaterial(0));
-	HexSpawn->AddInstance(HexPos); //-Not sure if this will work as the script is an actor component
+	HexSpawn->AddInstance(HexPos);*/
 
-	PlaneLocation.X += 50;
+	/*USTRUCT()
+		struct FEncapsule
+	{
+	public:
+		UInstancedStaticMeshComponent* Tile; //= NewObject<UInstancedStaticMeshComponent>(Owner);
+
+		void SetUp(AActor* Owner, UStaticMesh* TileMesh)
+		{
+			//UInstancedStaticMeshComponent* Tile = NewObject<UInstancedStaticMeshComponent>(Owner);
+			Tile->RegisterComponent();
+			Tile->SetStaticMesh(TileMesh);
+			Owner->AddInstanceComponent(Tile);
+			return;
+		}
+	};
+
+	
+
+	TArray<FEncapsule> HexMaster;
+
+	HexMaster.Add(FEncapsule());
+	//HexMaster[0].SetUp(Owner, HexTile);
+	HexMaster[0].Tile = NewObject<UInstancedStaticMeshComponent>(Owner);
+	HexMaster[0].Tile->RegisterComponent();
+	HexMaster[0].Tile->SetStaticMesh(HexTile);
+	Owner->AddInstanceComponent(HexMaster[0].Tile);
+	FTransform HexPos;
+	FVector PlaneLocation = RefPlane->GetActorLocation();
+	PlaneLocation.Z += 1;
 	HexPos.SetLocation(PlaneLocation);
-	HexSpawn->AddInstance(HexPos); //-Not sure if this will work as the script is an actor component
+	HexMaster[0].Tile->AddInstance(HexPos);*/
 
-	PlaneLocation.Y -= 250;
-	HexSpawn[1].SetRelativeLocation(PlaneLocation);
+	//TArray<TileInstancer> HexMaster;
+	HexMaster.Add(TileInstancer(Owner, HexTile));
+	Owner->AddInstanceComponent(HexMaster[0].Tile);
+	FTransform HexPos;
+	FVector PlaneLocation = RefPlane->GetActorLocation();
+	PlaneLocation.Z += 1;
+	HexPos.SetLocation(PlaneLocation);
+	HexMaster[0].Tile->AddInstance(HexPos);
+
+	//HexMaster[0].Tile->SetUp(Owner, HexTile);
+
+	//PlaneLocation.X += 50;
+	//HexPos.SetLocation(PlaneLocation);
+	//HexSpawn->AddInstance(HexPos); //-Not sure if this will work as the script is an actor component
+
+	//PlaneLocation.Y -= 250;
+	//HexSpawn[1].SetRelativeLocation(PlaneLocation);
 	/*TArray<int> tstr;
 	int tstr2[2];
 	tstr.Add(tstr2[])
@@ -110,4 +152,3 @@ void UHexRenderer::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 	// ...
 }
-
