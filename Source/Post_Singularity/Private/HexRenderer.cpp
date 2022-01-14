@@ -54,94 +54,30 @@ void UHexRenderer::BeginPlay()
 	}
 
 	//-Spawns Hex Tiles;
+	HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
+	Owner->AddInstanceComponent(HexMaster[0].Tile); //Adds the new row to the Actor
+	//FTransform HexPos;
 
-	//vector<vector<int>> tstr;
-	//tstr[0] = vector<int>(1);
-	//tstr[0][0] = 2;
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(Hex[0][0]));
-	/*
-	USTRUCT()
-		struct FEncapsule
+	FTransform HexStartPos;
+	HexStartPos.SetLocation(FVector(RefPlane->GetActorLocation().X + ((HexCount[1]/2) * HexGap[1]), RefPlane->GetActorLocation().Y - ((HexCount[0]/2) * HexGap[0]), RefPlane->GetActorLocation().Z + 0.1f)); //Obtains and stores the center of the plane
+	FTransform* HexPos = &HexStartPos;
+	/*for (int y = 0; y < HexCount[0]; y++)
 	{
-		TArray<int> Item;
-	};
-
-	TArray<FEncapsule> MyArray;
-
-	MyArray.Add(FEncapsule());
-	MyArray[0].Item.Add(12);
-	MyArray[0].Item.Add(15);
-
-	TArray<int> tstr;
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(MyArray[0].Item[0]));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(MyArray[0].Item[1]));
-	*/
-	//AActor* WorldPlane;
-	/*UInstancedStaticMeshComponent * HexSpawn = NewObject<UInstancedStaticMeshComponent>(Owner);
-	HexSpawn->RegisterComponent();
-	HexSpawn->SetStaticMesh(HexTile);
-	Owner->AddInstanceComponent(HexSpawn);
-	FTransform HexPos;
-	FVector PlaneLocation = RefPlane->GetActorLocation();
-	PlaneLocation.Z += 1;
-	HexPos.SetLocation(PlaneLocation);
-	HexSpawn->AddInstance(HexPos);*/
-
-	/*USTRUCT()
-		struct FEncapsule
-	{
-	public:
-		UInstancedStaticMeshComponent* Tile; //= NewObject<UInstancedStaticMeshComponent>(Owner);
-
-		void SetUp(AActor* Owner, UStaticMesh* TileMesh)
+		HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
+		Owner->AddInstanceComponent(HexMaster[y].Tile); //Adds the new row to the Actor
+		for (int x = 0; x < HexCount[1]; x++)
 		{
-			//UInstancedStaticMeshComponent* Tile = NewObject<UInstancedStaticMeshComponent>(Owner);
-			Tile->RegisterComponent();
-			Tile->SetStaticMesh(TileMesh);
-			Owner->AddInstanceComponent(Tile);
-			return;
+			HexMaster[0].Tile->AddInstance(*HexPos); //Spawns a hex tile
 		}
-	};
+	}*/
 
-	
+	HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
+	Owner->AddInstanceComponent(HexMaster[0].Tile); //Adds the new row to the Actor
 
-	TArray<FEncapsule> HexMaster;
+	HexMaster[0].Tile->AddInstance(*HexPos); //Spawns a hex tile
 
-	HexMaster.Add(FEncapsule());
-	//HexMaster[0].SetUp(Owner, HexTile);
-	HexMaster[0].Tile = NewObject<UInstancedStaticMeshComponent>(Owner);
-	HexMaster[0].Tile->RegisterComponent();
-	HexMaster[0].Tile->SetStaticMesh(HexTile);
-	Owner->AddInstanceComponent(HexMaster[0].Tile);
-	FTransform HexPos;
-	FVector PlaneLocation = RefPlane->GetActorLocation();
-	PlaneLocation.Z += 1;
-	HexPos.SetLocation(PlaneLocation);
-	HexMaster[0].Tile->AddInstance(HexPos);*/
-
-	//TArray<TileInstancer> HexMaster;
-	HexMaster.Add(TileInstancer(Owner, HexTile));
-	Owner->AddInstanceComponent(HexMaster[0].Tile);
-	FTransform HexPos;
-	FVector PlaneLocation = RefPlane->GetActorLocation();
-	PlaneLocation.Z += 1;
-	HexPos.SetLocation(PlaneLocation);
-	HexMaster[0].Tile->AddInstance(HexPos);
-
-	//HexMaster[0].Tile->SetUp(Owner, HexTile);
-
-	//PlaneLocation.X += 50;
-	//HexPos.SetLocation(PlaneLocation);
-	//HexSpawn->AddInstance(HexPos); //-Not sure if this will work as the script is an actor component
-
-	//PlaneLocation.Y -= 250;
-	//HexSpawn[1].SetRelativeLocation(PlaneLocation);
-	/*TArray<int> tstr;
-	int tstr2[2];
-	tstr.Add(tstr2[])
-	tstr[0].Push(2);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(tstr[0][0]));*/
+	HexStartPos.SetLocation(FVector(RefPlane->GetActorLocation().X + ((HexCount[1] / 2) * HexGap[1]), RefPlane->GetActorLocation().Y - ((HexCount[0] / 2) * HexGap[0]) + HexGap[0], RefPlane->GetActorLocation().Z + 0.1f)); //Obtains and stores the center of the plane
+	HexMaster[0].Tile->AddInstance(HexStartPos);
 }
 
 
