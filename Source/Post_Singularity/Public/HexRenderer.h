@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "TileInstancer.h"
+#include "HexBehaviour.h"
 #include "HexRenderer.generated.h"
 
 
@@ -24,17 +25,23 @@ public:
 	UHexRenderer();
 private:
 	AActor* Owner;
-	float HexGap[3] = { 153.0f, 76.5f, 115.0f }; //Distance between Hex tiles HexGap[0] for Row, HexGap[1] for collum x, HexGap[2] for collum y
+	float HexGap[3] = { 153.0f, 115.0f, 76.5f }; //Distance between Hex tiles HexGap[0] for Row, HexGap[1] for collum x, HexGap[2] for collum y
 	UPROPERTY(EditAnywhere, Category = "Hex Tile Asset") //Makes the below variable editable in the editor
 		UStaticMesh* HexTile; //Stores a reference to the hex tile static mesh for later instancing
 	UPROPERTY(EditAnywhere, Category = "Reference Plane") //Makes the below variable editable in the editor
 		AActor* RefPlane; //Stores a reference to the hex tile static mesh for later instancing
 
+	//Static Mesh Component to interact with
+	UPROPERTY(VisibleAnywhere)
+		UStaticMeshComponent* CustomMeshComponent;
+
+	void Tester();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

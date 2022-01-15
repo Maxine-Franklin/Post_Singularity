@@ -11,6 +11,19 @@ APost_SingularityPlayerController::APost_SingularityPlayerController()
 {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
+	bEnableMouseOverEvents = true;
+	Speed = 6;
+}
+
+void APost_SingularityPlayerController::SetSpeed(int val)
+{
+	Speed = val;
+	return;
+}
+
+int APost_SingularityPlayerController::GetSpeed()
+{
+	return Speed;
 }
 
 void APost_SingularityPlayerController::PlayerTick(float DeltaTime)
@@ -64,6 +77,11 @@ void APost_SingularityPlayerController::MoveToMouseCursor()
 
 		if (Hit.bBlockingHit)
 		{
+			if (Hit.GetActor()->ActorHasTag(TEXT("HexRenderer")) == true)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("FUCK SAKE YES!"));
+			}
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,);
 			// We hit something, move there
 			SetNewMoveDestination(Hit.ImpactPoint);
 		}

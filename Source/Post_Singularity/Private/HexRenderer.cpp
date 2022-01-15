@@ -25,9 +25,20 @@ UHexRenderer::UHexRenderer()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	//CustomMeshComponent = CreateDefaultSubobject(TEXT("Test Component"));
+	//CustomMeshComponent = CreateDefaultSubobject(TEXT("Test Component"));
+	//CustomMeshComponent->AttachTo(RootComponent);
+	//CustomMeshComponent->OnBeginCursorOver.__Internal_AddDynamic(RefPlane, &HexMaster::CustomOnBeginMouseOver());
+	//CustomMeshComponent->OnClicked.Add(&HexMaster::CustomOnBeginMouseOver("Tstr"));
 	// ...
 }
 
+
+void UHexRenderer::Tester()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Mouse Over"));
+	return;
+}
 
 // Called when the game starts
 void UHexRenderer::BeginPlay()
@@ -35,7 +46,9 @@ void UHexRenderer::BeginPlay()
 	Super::BeginPlay();
 
 	//-Determine Grid Size (x,y)
-	Owner = GetOwner(); //Get's the actor the script it attached to
+	Owner = GetOwner(); //Get's the actor the script is attached to
+	//RefPlane->OnBeginCursorOver.Add(Post_SingularityPlayerControler::OnCursorOver());
+
 	FVector Scale;
 	Scale.X = 100 * RefPlane->GetActorScale().X; //Stores the actors size (x axis) [scale multiplied by 100 as default plane size is 100uu]
 	Scale.Y = 100 * RefPlane->GetActorScale().Y; //Stores the actors size (y axis) [scale multiplied by 100 as default plane size is 100uu]
@@ -56,30 +69,39 @@ void UHexRenderer::BeginPlay()
 	//-Spawns Hex Tiles;
 	HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
 	Owner->AddInstanceComponent(HexMaster[0].Tile); //Adds the new row to the Actor
-	//FTransform HexPos;
 
 	FTransform HexStartPos;
 	HexStartPos.SetLocation(FVector(RefPlane->GetActorLocation().X + ((HexCount[1]/2) * HexGap[1]), RefPlane->GetActorLocation().Y - ((HexCount[0]/2) * HexGap[0]), RefPlane->GetActorLocation().Z + 0.1f)); //Obtains and stores the center of the plane
-	FTransform* HexPos = &HexStartPos;
-	/*for (int y = 0; y < HexCount[0]; y++)
+	//int* yHexCount = &HexCount[0]; //Uses a pointer for HexCount[0] as the value requires changing in the generating process
+	for (int x = 0; x <= HexCount[1]; x++) //For each column
 	{
 		HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
-		Owner->AddInstanceComponent(HexMaster[y].Tile); //Adds the new row to the Actor
-		for (int x = 0; x < HexCount[1]; x++)
+		Owner->AddInstanceComponent(HexMaster[x].Tile); //Adds the new row to the Actor
+		FVector HexPos = HexStartPos.GetLocation(); //Stores the coordinates of the first hex tile
+		HexPos.X -= (x * HexGap[1]); //Set's HexPos' X coordinate to the current row's position
+		if (x % 2 == 1) //if it is an odd numbered column then...
 		{
-			HexMaster[0].Tile->AddInstance(*HexPos); //Spawns a hex tile
+			HexPos.Y += HexGap[2]; //Adjusts the row's begining position to prevent overlap with previous column
+			//*yHexCount -= 1; //Decreases the amount of tiles on the next row by one - add system after adding collision tiles
 		}
-	}*/
+		//else { *yHexCount += 1; } else... increases amount of tiles on the next row by one - add system after adding collision tiles
+		for (int y = 0; y < HexCount[0]; y++) //For each tile of the current row
+		{
+			//HexMaster[x].Tile->Name = (x & y);
+			//HexMaster[x].Tile->Rename(new TCHAR(x & y));
+			HexMaster[x].Tile->AddInstance(FTransform(HexPos)); //Spawns a hex tile
+			//HexMaster[x].Tile[y].OnBeginCursorOver;
+			//HexMaster[x].Tile[y].OnBeginCursorOver.Add()
+			HexPos.Y += HexGap[0]; //Increments the next spawning position by one unit
+		}
+		//HexMaster[x].Tile->SetCustomData(0, { 1.0f });
+	}
 
-	HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
-	Owner->AddInstanceComponent(HexMaster[0].Tile); //Adds the new row to the Actor
-
-	HexMaster[0].Tile->AddInstance(*HexPos); //Spawns a hex tile
-
-	HexStartPos.SetLocation(FVector(RefPlane->GetActorLocation().X + ((HexCount[1] / 2) * HexGap[1]), RefPlane->GetActorLocation().Y - ((HexCount[0] / 2) * HexGap[0]) + HexGap[0], RefPlane->GetActorLocation().Z + 0.1f)); //Obtains and stores the center of the plane
-	HexMaster[0].Tile->AddInstance(HexStartPos);
+	//if (HexMaster[0].Tile[0].Bounds  (HexStartPos.GetLocation()))
+	//{
+	//
+	//}
 }
-
 
 // Called every frame
 void UHexRenderer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

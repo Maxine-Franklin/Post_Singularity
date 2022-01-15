@@ -14,7 +14,15 @@ class APost_SingularityPlayerController : public APlayerController
 public:
 	APost_SingularityPlayerController();
 
+	void SetSpeed(int val);
+	int GetSpeed();
+
 protected:
+	int Speed;
+
+	UPROPERTY(EditAnywhere, Category = "Hex Grid") //Makes the below variable editable in the editor
+	AActor* HexSpawner;
+
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
 
