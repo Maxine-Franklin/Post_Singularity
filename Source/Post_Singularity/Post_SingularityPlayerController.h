@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "HexRenderer.h"
 #include "HexSystems.h"
+#include "EngineUtils.h"
 #include "Post_SingularityPlayerController.generated.h"
 
 UCLASS()
@@ -55,7 +56,7 @@ protected:
 
 private:
 	//HexRenderer HexRend;
-	//HexSystems HexSys;
+	HexSystems HexSys;
 };
 
 

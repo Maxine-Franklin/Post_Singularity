@@ -28,7 +28,35 @@ int APost_SingularityPlayerController::GetSpeed()
 
 void APost_SingularityPlayerController::BeginPlay()
 {
-
+	//Obtain all actors in scene required to render hex grid
+	AActor* HexOwner = nullptr; //The master actor that holds all hex tiles
+	AActor* RefPlane = nullptr; //The plane that the tiles are being project onto
+	AActor* HexTile = nullptr; //The static mesh used for the hex tile's themselves
+	FString ActorNames[3] = {"Hex_Tile_MKII_2", "HexMaster", "PlaneMain"}; //The names of each of these actors in the scene
+	//NOTE: I know this is not the most efficent solution nor does it open itself to future proofing, but due to time constaints, I have to use this
+	for (TActorIterator<AActor> ActorIterator(GetWorld()); ActorIterator; ++ActorIterator) //Iterates through every actor in the scene
+	{
+		if (ActorIterator->GetName() == ActorNames[0]) //If the actor is the hex tile mesh then...
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("wut?"));
+			HexTile = *ActorIterator; //Stores the hex tile
+		}
+		else if (ActorIterator->GetName() == ActorNames[1]) //If the actor is the hex master actor then...
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("The?"));
+			HexOwner = *ActorIterator; //Stores the hex master actor
+		}
+		else if (ActorIterator->GetName() == ActorNames[2]) //If the actor is the reference plane then...
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("golf?"));
+			RefPlane = *ActorIterator; //Stores the reference plane
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, HexTile->GetName());
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, HexOwner->GetName());
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, RefPlane->GetName());
+	//HexSys.SetRendOwner(FindObject);
+	//HexSys.GenerateNewHexGrid();
 }
 
 void APost_SingularityPlayerController::PlayerTick(float DeltaTime)

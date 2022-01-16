@@ -143,6 +143,8 @@ void HexSystems::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 void HexSystems::GenerateNewHexGrid()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("New Hex Grid Generated"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Owner->GetName());
+	return;
 }
 
 void HexSystems::GetTileByYCoord(FHitResult Hit)
