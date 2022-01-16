@@ -15,6 +15,12 @@ TileInstancer::~TileInstancer()
 {
 }
 
+void TileInstancer::ChangeTileMaterial(UMaterialInterface* NewMaterial)
+{
+	Tile->SetMaterial(0, NewMaterial);
+	return;
+}
+
 void TileInstancer::SetUp(AActor* Owner, UStaticMesh* TileMesh)
 {
 	Tile = NewObject<UInstancedStaticMeshComponent>(Owner);

@@ -25,16 +25,15 @@ public:
 	AActor* GetRefPlane();
 	void SetRefPlane(AActor* NewRefPlane);
 
-
 	void GenerateNewHexGrid();
-	void GetTileByYCoord(FHitResult Hit);
+	int GetTileByXCoord(FHitResult Hit, int x);
+
+	void ChangeTileMaterial(int index, int x, int y);
 
 private:
 	AActor* Owner;
 	float HexGap[3] = { 153.0f, 115.0f, 76.5f }; //Distance between Hex tiles HexGap[0] for Row, HexGap[1] for collum x, HexGap[2] for collum y
-	UPROPERTY(EditAnywhere, Category = "Hex Tile Asset") //Makes the below variable editable in the editor
-		UStaticMesh* HexTile; //Stores a reference to the hex tile static mesh for later instancing
-	UPROPERTY(EditAnywhere, Category = "Reference Plane") //Makes the below variable editable in the editor
-		AActor* RefPlane; //Stores a reference to the hex tile static mesh for later instancing
-
+	FTransform HexStartPos; //Starting position of the first hex tile
+	UStaticMesh* HexTile; //Stores a reference to the hex tile static mesh for later instancing
+	AActor* RefPlane; //Stores a reference to the hex tile static mesh for later instancing
 };

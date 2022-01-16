@@ -26,6 +26,18 @@ int APost_SingularityPlayerController::GetSpeed()
 	return Speed;
 }
 
+void APost_SingularityPlayerController::SetPos(int NewPos[2])
+{
+	Pos[0] = NewPos[0];
+	Pos[1] = NewPos[1];
+	return;
+}
+
+int APost_SingularityPlayerController::GetPos(int val)
+{
+	return Pos[val];
+}
+
 void APost_SingularityPlayerController::BeginPlay()
 {
 	//Obtain all actors in scene required to render hex grid
@@ -54,16 +66,15 @@ void APost_SingularityPlayerController::BeginPlay()
 	HexSys.SetHexTile(HexTile);
 	HexSys.SetRefPlane(RefPlane);
 
-	//Pointer Clean up
-	/*delete HexOwner;
-	HexOwner = NULL;
-	delete RefPlane;
-	RefPlane = NULL;
-	delete HexTile;
-	HexTile = NULL;*/
-
 	//Generates the hex tiles
 	HexSys.GenerateNewHexGrid();
+
+	//Obtains player starting position on the grid
+	FHitResult Hit; 
+	FVector TracePoint = GetPawn()->GetActorLocation(); //Obtains player's starting world position
+	GetWorld()->LineTraceSingleByChannel(Hit, TracePoint, TracePoint.DownVector, ECC_Visibility); //Does a linetrace down 1uu from the player's starting point
+	Pos[0] = FCString::Atoi(*Hit.GetComponent()->GetName().RightChop(29)); //Obtains the column
+	Pos[1] = HexSys.GetTileByXCoord(Hit, Pos[0]); //Obtains the row
 }
 
 void APost_SingularityPlayerController::PlayerTick(float DeltaTime)
@@ -119,14 +130,13 @@ void APost_SingularityPlayerController::MoveToMouseCursor()
 		{
 			if (Hit.GetActor()->ActorHasTag(TEXT("HexRenderer")) == true)
 			{
-				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, (Hit.GetActor()->GetName()));
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, (Hit.GetComponent()->GetName()));
-				//AActor* HexRend = Hit.GetActor();
-				//HexRend.Component
-				//UObject* HexRend = Hit.GetActor()->GetDefaultSubobjectByName(TEXT("HexRenderer"));
-				//HexRend->CallFunction(Hit.GetActor(), &UHexRenderer::GetTileByYCoord(Hit))
-				//UHexRenderer GetTileByYCoord(Hit);
-				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, (Hit.GetComponent()->GetComponentInstanceData()->));
+				//Obtains the column and row that has been clicked on
+				int x = FCString::Atoi(*Hit.GetComponent()->GetName().RightChop(29)); //Obtains the column that has been clicked on
+				int y = HexSys.GetTileByXCoord(Hit, Pos[0]); //Obtains the row that has been clicked on
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(x) + ", " + FString::FromInt(y));
+				//HexSys.HexMaster[x].Tile[y].SetMaterial(0, HexSys.GetHexTile()->GetMaterial(2));
+				HexSys.ChangeTileMaterial(2, x, y);
+				//HexSys.HexMaster[x].Tile[y]
 			}
 			SetNewMoveDestination(Hit.ImpactPoint);
 		}

@@ -12,5 +12,6 @@ public:
 	TileInstancer(AActor* Owner, UStaticMesh* TileMesh);
 	~TileInstancer();
 
+	void ChangeTileMaterial(UMaterialInterface* NewMaterial);
 	void SetUp(AActor* Owner, UStaticMesh* TileMesh);
 };

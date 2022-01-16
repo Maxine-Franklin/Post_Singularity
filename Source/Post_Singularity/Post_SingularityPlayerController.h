@@ -7,6 +7,7 @@
 #include "HexRenderer.h"
 #include "HexSystems.h"
 #include "EngineUtils.h"
+#include "Engine/World.h"
 #include "Post_SingularityPlayerController.generated.h"
 
 UCLASS()
@@ -20,8 +21,12 @@ public:
 	void SetSpeed(int val);
 	int GetSpeed();
 
+	void SetPos(int NewPos[2]);
+	int GetPos(int val);
+
 protected:
 	int Speed;
+	int Pos[2]; //Position on the hex grid (x, y)
 	//UHexRenderer HexRend;
 
 	//UPROPERTY(EditAnywhere, Category = "Hex Grid") //Makes the below variable editable in the editor

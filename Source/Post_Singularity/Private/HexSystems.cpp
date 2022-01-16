@@ -62,88 +62,6 @@ void HexSystems::SetRefPlane(AActor* NewRefPlane)
 	return;
 }
 
-/*
-void HexSystems::Tester()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Mouse Over"));
-	return;
-}*/
-
-/*
-// Called when the game starts
-void HexSystems::BeginPlay()
-{
-	Super::BeginPlay();
-
-	//-Determine Grid Size (x,y)
-	Owner = GetOwner(); //Get's the actor the script is attached to
-	//RefPlane->OnBeginCursorOver.Add(Post_SingularityPlayerControler::OnCursorOver());
-
-	FVector Scale;
-	Scale.X = 100 * RefPlane->GetActorScale().X; //Stores the actors size (x axis) [scale multiplied by 100 as default plane size is 100uu]
-	Scale.Y = 100 * RefPlane->GetActorScale().Y; //Stores the actors size (y axis) [scale multiplied by 100 as default plane size is 100uu]
-
-	int HexCount[2]; //Used to store y, x size of grid (stored in y, x for loop reasons)
-	float* _Scale[2] = { &Scale.Y, &Scale.X }; //Temporary pointer to store actor y, x size
-	for (int i = 0; i < 2; i++)
-	{
-		HexCount[i] = (*_Scale[i] / HexGap[i]); //Calculates how many hex tiles can fit on the actor
-		if (fmod(*_Scale[i], HexGap[i]) < (HexGap[i] / 2)) //Checks if any hex tiles would be partially outside of the actor's bounds
-		{
-			HexCount[i] -= 1; //Decreases hex tile count accordingly
-		}
-		delete _Scale[i]; //Deletes the scale pointer as it is no longer needed
-		_Scale[i] = NULL; //Set's scale pointer to NULL to prevent any crashes in case of double delete
-	}
-
-	//-Spawns Hex Tiles;
-	HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
-	Owner->AddInstanceComponent(HexMaster[0].Tile); //Adds the new row to the Actor
-
-	FTransform HexStartPos;
-	HexStartPos.SetLocation(FVector(RefPlane->GetActorLocation().X + ((HexCount[1]/2) * HexGap[1]), RefPlane->GetActorLocation().Y - ((HexCount[0]/2) * HexGap[0]), RefPlane->GetActorLocation().Z + 0.1f)); //Obtains and stores the center of the plane
-	//int* yHexCount = &HexCount[0]; //Uses a pointer for HexCount[0] as the value requires changing in the generating process
-	for (int x = 0; x <= HexCount[1]; x++) //For each column
-	{
-		HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
-		Owner->AddInstanceComponent(HexMaster[x].Tile); //Adds the new row to the Actor
-		FVector HexPos = HexStartPos.GetLocation(); //Stores the coordinates of the first hex tile
-		HexPos.X -= (x * HexGap[1]); //Set's HexPos' X coordinate to the current row's position
-		if (x % 2 == 1) //if it is an odd numbered column then...
-		{
-			HexPos.Y += HexGap[2]; //Adjusts the row's begining position to prevent overlap with previous column
-			//*yHexCount -= 1; //Decreases the amount of tiles on the next row by one - add system after adding collision tiles
-		}
-		//else { *yHexCount += 1; } else... increases amount of tiles on the next row by one - add system after adding collision tiles
-		for (int y = 0; y < HexCount[0]; y++) //For each tile of the current row
-		{
-			//HexMaster[x].Tile->Name = (x & y);
-			//HexMaster[x].Tile->Rename(new TCHAR(x & y));
-			HexMaster[x].Tile->AddInstance(FTransform(HexPos)); //Spawns a hex tile
-			//HexMaster[x].Tile[y].OnBeginCursorOver;
-			//HexMaster[x].Tile[y].OnBeginCursorOver.Add()
-			HexPos.Y += HexGap[0]; //Increments the next spawning position by one unit
-		}
-		//HexMaster[x].Tile->SetCustomData(0, { 1.0f });
-	}
-
-	//if (HexMaster[0].Tile[0].Bounds  (HexStartPos.GetLocation()))
-	//{
-	//
-	//}
-}
-*/
-
-/*
-// Called every frame
-void HexSystems::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-*/
-
 void HexSystems::GenerateNewHexGrid()
 {
 	//-Determine Grid Size (x,y)
@@ -166,10 +84,6 @@ void HexSystems::GenerateNewHexGrid()
 	}
 
 	//-Spawns Hex Tiles;
-	HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
-	Owner->AddInstanceComponent(HexMaster[0].Tile); //Adds the new row to the Actor
-
-	FTransform HexStartPos;
 	HexStartPos.SetLocation(FVector(RefPlane->GetActorLocation().X + ((HexCount[1] / 2) * HexGap[1]), RefPlane->GetActorLocation().Y - ((HexCount[0] / 2) * HexGap[0]), RefPlane->GetActorLocation().Z + 0.1f)); //Obtains and stores the center of the plane
 	//int* yHexCount = &HexCount[0]; //Uses a pointer for HexCount[0] as the value requires changing in the generating process - Adding in a future system
 	for (int x = 0; x <= HexCount[1]; x++) //For each column
@@ -190,12 +104,46 @@ void HexSystems::GenerateNewHexGrid()
 			HexPos.Y += HexGap[0]; //Increments the next spawning position by one unit
 		}
 	}
-
+	HexMaster.Add(TileInstancer(Owner, HexTile)); //Empty row that will hold temporary instances later
+	Owner->AddInstanceComponent(HexMaster[HexCount[1]+1].Tile); //Adds the new row to the Actor
 	return;
 }
 
-void HexSystems::GetTileByYCoord(FHitResult Hit)
+int HexSystems::GetTileByXCoord(FHitResult Hit, int x)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Heyya"));
+	//Obtains y starting coordinate
+	FVector StartPos = HexStartPos.GetLocation();
+	float yBound = StartPos.Y;
+	if (x % 2 == 1) //If on an odd numbered column then...
+	{
+		yBound += HexGap[2]; //Increments start pos to account for difference between odd and even rows
+	}
+
+	//Obtains y coord
+	int y = -1; //Starts y at negative 1 as it will become 0 on the first iteration through the loop
+	do
+	{
+		y++; //Increments the value of y by 1
+		yBound += HexGap[0]; //Increments y
+	} while ((yBound - HexGap[0]/2) < Hit.Location.Y); //While the left most part of the current hex tile is less than the y position of the mouse...
+
+	return y;
+}
+
+void HexSystems::ChangeTileMaterial(int index, int x, int y)
+{
+	//Moves current hex tile to underneath the map
+	FVector StartPos = HexStartPos.GetLocation(); //Logs Hex Starting Position
+	FVector HexPos = FVector(StartPos.X - (x * HexGap[1]), StartPos.Y + (y * HexGap[0]), -1.0f); //Logs new position under the map in a vector
+	if (x % 2 == 1) { HexPos.Y += HexGap[2]; } //If hex tile is on an odd numbered row then... Adjust accordingly
+	FTransform NewTrans = HexStartPos; //Logs hex starting scale and rotation
+	NewTrans.SetLocation(HexPos); //Sets the hex position to be under the map
+	HexMaster[x].Tile->UpdateInstanceTransform(y, NewTrans, true, true, true); //Moves the indicated hex tile underneath the map
+
+	//Adds new temporary hex tile with chosen material
+	HexPos.Z = 1.0f;
+	NewTrans.SetLocation(HexPos);
+	HexMaster[HexMaster.Num() - 1].Tile->AddInstance(NewTrans); //Adds the hex tile in place of the previous one
+	HexMaster[HexMaster.Num() - 1].Tile->SetMaterial(0, HexTile->GetMaterial(index)); //Changes new hex tile material to be the chosen material
 	return;
 }
