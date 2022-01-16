@@ -24,22 +24,50 @@ UHexRenderer::UHexRenderer()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	//CustomMeshComponent = CreateDefaultSubobject(TEXT("Test Component"));
-	//CustomMeshComponent = CreateDefaultSubobject(TEXT("Test Component"));
-	//CustomMeshComponent->AttachTo(RootComponent);
-	//CustomMeshComponent->OnBeginCursorOver.__Internal_AddDynamic(RefPlane, &HexMaster::CustomOnBeginMouseOver());
-	//CustomMeshComponent->OnClicked.Add(&HexMaster::CustomOnBeginMouseOver("Tstr"));
 	// ...
 }
 
+AActor* UHexRenderer::GetOwner()
+{
+	return Owner;
+}
 
+void UHexRenderer::SetOwner(AActor* NewOwner)
+{
+	Owner = NewOwner;
+	return;
+}
+
+UStaticMesh* UHexRenderer::GetHexTile()
+{
+	return HexTile;
+}
+
+void UHexRenderer::SetHexTile(UStaticMesh* NewHexTile)
+{
+	HexTile = NewHexTile;
+	return;
+}
+
+AActor* UHexRenderer::GetRefPlane()
+{
+	return RefPlane;
+}
+
+void UHexRenderer::SetRefPlace(AActor* NewRefPlane)
+{
+	RefPlane = NewRefPlane;
+	return;
+}
+
+/*
 void UHexRenderer::Tester()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Mouse Over"));
 	return;
-}
+}*/
 
+/*
 // Called when the game starts
 void UHexRenderer::BeginPlay()
 {
@@ -102,11 +130,25 @@ void UHexRenderer::BeginPlay()
 	//
 	//}
 }
+*/
 
+/*
 // Called every frame
 void UHexRenderer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+*/
+
+void UHexRenderer::GenerateNewHexGrid()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("New Hex Grid Generated"));
+}
+
+void UHexRenderer::GetTileByYCoord(FHitResult Hit)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Heyya"));
+	return;
 }

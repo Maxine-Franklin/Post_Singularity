@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "HexRenderer.h"
 #include "Post_SingularityPlayerController.generated.h"
 
 UCLASS()
@@ -19,12 +20,16 @@ public:
 
 protected:
 	int Speed;
+	//UHexRenderer HexRend;
 
 	UPROPERTY(EditAnywhere, Category = "Hex Grid") //Makes the below variable editable in the editor
 	AActor* HexSpawner;
 
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
+
+	// Called when the game starts
+	virtual void BeginPlay() override;
 
 	// Begin PlayerController interface
 	virtual void PlayerTick(float DeltaTime) override;

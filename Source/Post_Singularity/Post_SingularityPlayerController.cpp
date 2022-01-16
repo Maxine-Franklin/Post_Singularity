@@ -26,6 +26,11 @@ int APost_SingularityPlayerController::GetSpeed()
 	return Speed;
 }
 
+void APost_SingularityPlayerController::BeginPlay()
+{
+
+}
+
 void APost_SingularityPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
@@ -79,10 +84,15 @@ void APost_SingularityPlayerController::MoveToMouseCursor()
 		{
 			if (Hit.GetActor()->ActorHasTag(TEXT("HexRenderer")) == true)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("FUCK SAKE YES!"));
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, (Hit.GetActor()->GetName()));
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, (Hit.GetComponent()->GetName()));
+				//AActor* HexRend = Hit.GetActor();
+				//HexRend.Component
+				//UObject* HexRend = Hit.GetActor()->GetDefaultSubobjectByName(TEXT("HexRenderer"));
+				//HexRend->CallFunction(Hit.GetActor(), &UHexRenderer::GetTileByYCoord(Hit))
+				//UHexRenderer GetTileByYCoord(Hit);
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, (Hit.GetComponent()->GetComponentInstanceData()->));
 			}
-			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,);
-			// We hit something, move there
 			SetNewMoveDestination(Hit.ImpactPoint);
 		}
 	}

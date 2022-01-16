@@ -23,6 +23,18 @@ public:
 	TArray<TileInstancer> HexMaster;
 
 	UHexRenderer();
+
+	AActor* GetOwner();
+	void SetOwner(AActor* NewOwner);
+	UStaticMesh* GetHexTile();
+	void SetHexTile(UStaticMesh* NewHexTile);
+	AActor* GetRefPlane();
+	void SetRefPlace(AActor* NewRefPlane);
+
+
+	void GenerateNewHexGrid();
+	void GetTileByYCoord(FHitResult Hit);
+
 private:
 	AActor* Owner;
 	float HexGap[3] = { 153.0f, 115.0f, 76.5f }; //Distance between Hex tiles HexGap[0] for Row, HexGap[1] for collum x, HexGap[2] for collum y
@@ -31,19 +43,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Reference Plane") //Makes the below variable editable in the editor
 		AActor* RefPlane; //Stores a reference to the hex tile static mesh for later instancing
 
-	//Static Mesh Component to interact with
-	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* CustomMeshComponent;
-
-	void Tester();
+	//void Tester();
 
 protected:
 	// Called when the game starts
-	virtual void BeginPlay() override;
+	//virtual void BeginPlay() override;
 
 public:
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 		
 };
