@@ -25,12 +25,12 @@ HexSystems::~HexSystems()
 {
 }
 
-AActor* HexSystems::GetRendOwner()
+AActor* HexSystems::GetHexOwner()
 {
 	return Owner;
 }
 
-void HexSystems::SetRendOwner(AActor* NewOwner)
+void HexSystems::SetHexOwner(AActor* NewOwner)
 {
 	Owner = NewOwner;
 	return;
@@ -41,9 +41,13 @@ UStaticMesh* HexSystems::GetHexTile()
 	return HexTile;
 }
 
-void HexSystems::SetHexTile(UStaticMesh* NewHexTile)
+void HexSystems::SetHexTile(AActor* NewHexTile)
 {
-	HexTile = NewHexTile;
+	//Uses the component list of the Actor HexTile to obtain it's mesh
+	TArray<UStaticMeshComponent*> Components;
+	NewHexTile->GetComponents<UStaticMeshComponent>(Components);
+
+	HexTile = Components[0]->GetStaticMesh();
 	return;
 }
 
@@ -52,7 +56,7 @@ AActor* HexSystems::GetRefPlane()
 	return RefPlane;
 }
 
-void HexSystems::SetRefPlace(AActor* NewRefPlane)
+void HexSystems::SetRefPlane(AActor* NewRefPlane)
 {
 	RefPlane = NewRefPlane;
 	return;
@@ -142,8 +146,51 @@ void HexSystems::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 
 void HexSystems::GenerateNewHexGrid()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("New Hex Grid Generated"));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Owner->GetName());
+	//-Determine Grid Size (x,y)
+	FVector Scale;
+	Scale.X = 100 * RefPlane->GetActorScale().X; //Stores the actors size (x axis) [scale multiplied by 100 as default plane size is 100uu]
+	Scale.Y = 100 * RefPlane->GetActorScale().Y; //Stores the actors size (y axis)
+
+	int HexCount[2]; //Used to store y, x size of grid (stored in y, x for loop reasons)
+	float* refScale[2] = { &Scale.Y, &Scale.X }; //Temporary pointer to store actor's y, x size
+	for (int i = 0; i < 2; i++)
+	{
+		HexCount[i] = (*refScale[i] / HexGap[i]); //Calculates how many hex tiles can fit on the actor
+		if (fmod(*refScale[i], HexGap[i]) < (HexGap[i] / 2)) //If hex tiles spawned would be greater than the size of the actor then..
+		{
+			HexCount[i] -= 1; //Decreases hex tile count by one
+		}
+		//Clean Up
+		delete refScale[i];
+		refScale[i] = NULL;
+	}
+
+	//-Spawns Hex Tiles;
+	HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the grid
+	Owner->AddInstanceComponent(HexMaster[0].Tile); //Adds the new row to the Actor
+
+	FTransform HexStartPos;
+	HexStartPos.SetLocation(FVector(RefPlane->GetActorLocation().X + ((HexCount[1] / 2) * HexGap[1]), RefPlane->GetActorLocation().Y - ((HexCount[0] / 2) * HexGap[0]), RefPlane->GetActorLocation().Z + 0.1f)); //Obtains and stores the center of the plane
+	//int* yHexCount = &HexCount[0]; //Uses a pointer for HexCount[0] as the value requires changing in the generating process - Adding in a future system
+	for (int x = 0; x <= HexCount[1]; x++) //For each column
+	{
+		HexMaster.Add(TileInstancer(Owner, HexTile)); //Adds a new row of hex tiles to the array
+		Owner->AddInstanceComponent(HexMaster[x].Tile); //Adds the new row to the Actor
+		FVector HexPos = HexStartPos.GetLocation(); //Stores the coordinates of the first hex tile
+		HexPos.X -= (x * HexGap[1]); //Set's HexPos' X coordinate to the current row's position
+		if (x % 2 == 1) //if it is an odd numbered column then...
+		{
+			HexPos.Y += HexGap[2]; //Adjusts the row's begining position to prevent overlap with previous column
+			//*yHexCount -= 1; //Decreases the amount of tiles on the next row by one - Adding in a future system
+		}
+		//else { *yHexCount += 1; } else... increases amount of tiles on the next row by one - Adding in a future system
+		for (int y = 0; y < HexCount[0]; y++) //For each tile on the current row
+		{
+			HexMaster[x].Tile->AddInstance(FTransform(HexPos)); //Spawns a hex tile
+			HexPos.Y += HexGap[0]; //Increments the next spawning position by one unit
+		}
+	}
+
 	return;
 }
 

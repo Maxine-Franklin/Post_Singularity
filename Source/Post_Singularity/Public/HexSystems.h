@@ -18,12 +18,12 @@ public:
 
 	HexSystems();
 	~HexSystems();
-	AActor* GetRendOwner();
-	void SetRendOwner(AActor* NewOwner);
+	AActor* GetHexOwner();
+	void SetHexOwner(AActor* NewOwner);
 	UStaticMesh* GetHexTile();
-	void SetHexTile(UStaticMesh* NewHexTile);
+	void SetHexTile(AActor* NewHexTile);
 	AActor* GetRefPlane();
-	void SetRefPlace(AActor* NewRefPlane);
+	void SetRefPlane(AActor* NewRefPlane);
 
 
 	void GenerateNewHexGrid();

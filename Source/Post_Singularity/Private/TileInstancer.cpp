@@ -6,7 +6,6 @@
 TileInstancer::TileInstancer(AActor* Owner, UStaticMesh* TileMesh)
 {
 	Tile = NewObject<UInstancedStaticMeshComponent>(Owner);
-	//Tile->Rename(new TCHAR(*"HexCollumn"));
 	Tile->RegisterComponent();
 	Tile->SetStaticMesh(TileMesh);
 	Owner->AddInstanceComponent(Tile);
