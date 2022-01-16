@@ -4,26 +4,20 @@
 
 #include <iostream>
 #include "Engine/Engine.h"
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
 #include "TileInstancer.h"
-#include "HexBehaviour.h"
-#include "HexRenderer.generated.h"
+#include "CoreMinimal.h"
 
-
-using namespace std;
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class POST_SINGULARITY_API UHexRenderer : public UActorComponent
+/**
+ * 
+ */
+class POST_SINGULARITY_API HexSystems
 {
-	GENERATED_BODY()
-
-public:	
+public:
 	// Sets default values for this component's properties
 	TArray<TileInstancer> HexMaster;
 
-	UHexRenderer();
-
+	HexSystems();
+	~HexSystems();
 	AActor* GetRendOwner();
 	void SetRendOwner(AActor* NewOwner);
 	UStaticMesh* GetHexTile();
@@ -43,14 +37,4 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Reference Plane") //Makes the below variable editable in the editor
 		AActor* RefPlane; //Stores a reference to the hex tile static mesh for later instancing
 
-	//void Tester();
-
-protected:
-	// Called when the game starts
-	//virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-		
 };

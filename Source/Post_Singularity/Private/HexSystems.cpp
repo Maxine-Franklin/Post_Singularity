@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "HexRenderer.h"
+#include "HexSystems.h"
 
 /*
 :Notes
@@ -18,50 +17,49 @@
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, <string>);
 */
 
-// Sets default values for this component's properties
-UHexRenderer::UHexRenderer()
+HexSystems::HexSystems()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	//PrimaryComponentTick.bCanEverTick = true;
-	// ...
 }
 
-AActor* UHexRenderer::GetRendOwner()
+HexSystems::~HexSystems()
+{
+}
+
+AActor* HexSystems::GetRendOwner()
 {
 	return Owner;
 }
 
-void UHexRenderer::SetRendOwner(AActor* NewOwner)
+void HexSystems::SetRendOwner(AActor* NewOwner)
 {
 	Owner = NewOwner;
 	return;
 }
 
-UStaticMesh* UHexRenderer::GetHexTile()
+UStaticMesh* HexSystems::GetHexTile()
 {
 	return HexTile;
 }
 
-void UHexRenderer::SetHexTile(UStaticMesh* NewHexTile)
+void HexSystems::SetHexTile(UStaticMesh* NewHexTile)
 {
 	HexTile = NewHexTile;
 	return;
 }
 
-AActor* UHexRenderer::GetRefPlane()
+AActor* HexSystems::GetRefPlane()
 {
 	return RefPlane;
 }
 
-void UHexRenderer::SetRefPlace(AActor* NewRefPlane)
+void HexSystems::SetRefPlace(AActor* NewRefPlane)
 {
 	RefPlane = NewRefPlane;
 	return;
 }
 
 /*
-void UHexRenderer::Tester()
+void HexSystems::Tester()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, TEXT("Mouse Over"));
 	return;
@@ -69,7 +67,7 @@ void UHexRenderer::Tester()
 
 /*
 // Called when the game starts
-void UHexRenderer::BeginPlay()
+void HexSystems::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -134,7 +132,7 @@ void UHexRenderer::BeginPlay()
 
 /*
 // Called every frame
-void UHexRenderer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void HexSystems::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -142,12 +140,12 @@ void UHexRenderer::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 }
 */
 
-void UHexRenderer::GenerateNewHexGrid()
+void HexSystems::GenerateNewHexGrid()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("New Hex Grid Generated"));
 }
 
-void UHexRenderer::GetTileByYCoord(FHitResult Hit)
+void HexSystems::GetTileByYCoord(FHitResult Hit)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Heyya"));
 	return;

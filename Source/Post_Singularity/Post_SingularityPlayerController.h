@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "HexRenderer.h"
+#include "HexSystems.h"
 #include "Post_SingularityPlayerController.generated.h"
 
 UCLASS()
@@ -22,8 +23,8 @@ protected:
 	int Speed;
 	//UHexRenderer HexRend;
 
-	UPROPERTY(EditAnywhere, Category = "Hex Grid") //Makes the below variable editable in the editor
-	AActor* HexSpawner;
+	//UPROPERTY(EditAnywhere, Category = "Hex Grid") //Makes the below variable editable in the editor
+	//AActor* HexSpawner;
 
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -51,6 +52,10 @@ protected:
 	/** Input handlers for SetDestination action. */
 	void OnSetDestinationPressed();
 	void OnSetDestinationReleased();
+
+private:
+	//HexRenderer HexRend;
+	//HexSystems HexSys;
 };
 
 
