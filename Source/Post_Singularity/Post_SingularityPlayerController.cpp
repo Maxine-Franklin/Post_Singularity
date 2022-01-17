@@ -12,7 +12,7 @@ APost_SingularityPlayerController::APost_SingularityPlayerController()
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
 	bEnableMouseOverEvents = true;
-	Speed = 6;
+	Speed = 3;
 }
 
 void APost_SingularityPlayerController::SetSpeed(int val)
@@ -122,23 +122,59 @@ void APost_SingularityPlayerController::MoveToMouseCursor()
 	}
 	else
 	{
-		// Trace to see what is under the mouse cursor
-		FHitResult Hit;
-		GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-
-		if (Hit.bBlockingHit)
+		if (MouseEvents == true)
 		{
-			if (Hit.GetActor()->ActorHasTag(TEXT("HexRenderer")) == true)
+			// Trace to see what is under the mouse cursor
+			FHitResult Hit;
+			GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+			if (Hit.bBlockingHit)
 			{
-				//Obtains the column and row that has been clicked on
-				int x = FCString::Atoi(*Hit.GetComponent()->GetName().RightChop(29)); //Obtains the column that has been clicked on
-				int y = HexSys.GetTileByXCoord(Hit, Pos[0]); //Obtains the row that has been clicked on
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(x) + ", " + FString::FromInt(y));
-				//HexSys.HexMaster[x].Tile[y].SetMaterial(0, HexSys.GetHexTile()->GetMaterial(2));
-				HexSys.ChangeTileMaterial(2, x, y);
-				//HexSys.HexMaster[x].Tile[y]
+				if (Hit.GetActor()->ActorHasTag(TEXT("HexRenderer")) == true)
+				{
+					MouseEvents = false;
+					if (FailedMove[0] != -1)
+					{
+						HexSys.RevertTileMaterial(FailedMove[0], FailedMove[1]);
+						FailedMove[0] = -1;
+					}
+					//Obtains the column and row that has been clicked on
+					int x = FCString::Atoi(*Hit.GetComponent()->GetName().RightChop(29)); //Obtains the column that has been clicked on
+					int y = HexSys.GetTileByXCoord(Hit, Pos[0]); //Obtains the row that has been clicked on
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("START: ") + FString::FromInt(Pos[0]) + TEXT(", ") + FString::FromInt(Pos[1]));
+					TArray<Coords> CoordLog = HexSys.CalculateMovement(x, y, Speed, Pos[0], Pos[1]);
+					if (CoordLog[0].x == -1)
+					{
+						HexSys.ChangeTileMaterial(3, x, y);
+						FailedMove[0] = x;
+						FailedMove[1] = y;
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("FAILED MOVE"));
+					}
+					else
+					{
+						for (int i = 0; i < Speed; i++)
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("STEP: ") + FString::FromInt(CoordLog[i].x) + TEXT(", ") + FString::FromInt(CoordLog[i].y));
+							FVector NewDest = HexSys.NewDest(CoordLog[i].x, CoordLog[i].y);
+							NewDest.Z = GetPawn()->GetActorLocation().Z;
+							//HexSys.RevertTileMaterial(CoordLog[i].x, CoordLog[i].y);
+							if (i > 0)
+							{
+								if (CoordLog[i].x != CoordLog[i - 1].x && CoordLog[i].y != CoordLog[i - 1].y)
+								{
+									break;
+								}
+							}
+							SetNewMoveDestination(NewDest, true);
+						}
+						Pos[0] = x;
+						Pos[1] = y;
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("END: ") + FString::FromInt(x) + TEXT(", ") + FString::FromInt(y));
+					}
+					_sleep(65);
+					MouseEvents = true;
+				}
 			}
-			SetNewMoveDestination(Hit.ImpactPoint);
 		}
 	}
 }
@@ -153,11 +189,11 @@ void APost_SingularityPlayerController::MoveToTouchLocation(const ETouchIndex::T
 	if (HitResult.bBlockingHit)
 	{
 		// We hit something, move there
-		SetNewMoveDestination(HitResult.ImpactPoint);
+		SetNewMoveDestination(HitResult.ImpactPoint, false);
 	}
 }
 
-void APost_SingularityPlayerController::SetNewMoveDestination(const FVector DestLocation)
+void APost_SingularityPlayerController::SetNewMoveDestination(const FVector DestLocation, bool Loop)
 {
 	APawn* const MyPawn = GetPawn();
 	if (MyPawn)
@@ -165,10 +201,14 @@ void APost_SingularityPlayerController::SetNewMoveDestination(const FVector Dest
 		float const Distance = FVector::Dist(DestLocation, MyPawn->GetActorLocation());
 
 		// We need to issue move command only if far enough in order for walk animation to play correctly
-		if ((Distance > 120.0f))
-		{
+		//if ((Distance > 120.0f))
+		//{
 			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
-		}
+		//}
+	}
+	if (Loop == true)
+	{
+		return;
 	}
 }
 

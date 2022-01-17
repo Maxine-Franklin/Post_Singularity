@@ -27,6 +27,8 @@ public:
 protected:
 	int Speed;
 	int Pos[2]; //Position on the hex grid (x, y)
+	int FailedMove[2] = {-1, -1}; //Logs position of failed move (x, y)
+	bool MouseEvents = true; //Needed to disable the player mouse
 	//UHexRenderer HexRend;
 
 	//UPROPERTY(EditAnywhere, Category = "Hex Grid") //Makes the below variable editable in the editor
@@ -53,7 +55,7 @@ protected:
 	void MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location);
 	
 	/** Navigate player to the given world location. */
-	void SetNewMoveDestination(const FVector DestLocation);
+	void SetNewMoveDestination(const FVector DestLocation, bool Loop);
 
 	/** Input handlers for SetDestination action. */
 	void OnSetDestinationPressed();

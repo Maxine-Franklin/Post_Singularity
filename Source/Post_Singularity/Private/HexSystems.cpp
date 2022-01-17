@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "HexSystems.h"
+#include "..\Public\HexSystems.h"
 
 /*
 :Notes
@@ -130,20 +131,105 @@ int HexSystems::GetTileByXCoord(FHitResult Hit, int x)
 	return y;
 }
 
+TArray<Coords> HexSystems::CalculateMovement(int xTarget, int yTarget, int Speed, int xCPos, int yCPos)
+{
+	TArray<Coords> CoordLog;
+	int yChange;
+	int StepsTaken = 0;
+	do
+	{
+		yChange = Change(yCPos, yTarget);
+		if (yCPos != yTarget && xCPos != xTarget)
+		{
+			float xCP = xCPos;
+			xCP /= 2;
+			if (fmod(xCP, 1) == 0)
+			{
+				yChange -= 1;
+			}
+			else
+			{
+				yChange += 1;
+			}
+		}
+		if (yChange > 1 || yChange < -1)
+		{
+			yChange = floor(yChange / 2);
+		}
+		yCPos += yChange;
+		xCPos += Change(xCPos, xTarget);
+		CoordLog.Add(Coords());
+		CoordLog[StepsTaken].x = xCPos;
+		CoordLog[StepsTaken].y = yCPos;
+
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("STEP: ") + FString::FromInt(CoordLog[StepsTaken].x) + TEXT(", ") + FString::FromInt(CoordLog[StepsTaken].y));
+
+		StepsTaken++;
+	} while (/*(xCPos != xTarget && yCPos != yTarget) || */StepsTaken != Speed);
+	if (xCPos != xTarget || yCPos != yTarget)
+	{
+		CoordLog[0].x = -1;
+	}
+	else
+	{
+		for (int i = 0; i < Speed; i++)
+		{
+			if (i > 0)
+			{
+				if (CoordLog[i].x != CoordLog[i - 1].x && CoordLog[i].y != CoordLog[i - 1].y)
+				{
+					break;
+				}
+			}
+			//ChangeTileMaterial(2, CoordLog[i].x, CoordLog[i].y);
+		}
+	}
+	return CoordLog;
+}
+
+FVector HexSystems::NewDest(int x, int y)
+{
+	FVector HexPos = HexStartPos.GetLocation(); //Logs Hex Starting Position
+	HexPos.X -= x * HexGap[1];
+	HexPos.Y += y * HexGap[0];
+	if (x % 2 == 1) { HexPos.Y += HexGap[2]; } //If hex tile is on an odd numbered row then... Adjust accordingly
+	return HexPos;
+}
+
+FTransform HexSystems::ChangeSetUp(int Direction, int x, int y)
+{
+	FVector StartPos = HexStartPos.GetLocation(); //Logs Hex Starting Position
+	FVector HexPos = FVector(StartPos.X - (x * HexGap[1]), StartPos.Y + (y * HexGap[0]), Direction); //Logs new position under the map in a vector
+	if (x % 2 == 1) { HexPos.Y += HexGap[2]; } //If hex tile is on an odd numbered row then... Adjust accordingly
+	FTransform NewTrans = HexStartPos; //Logs hex starting scale and rotation
+	NewTrans.SetLocation(HexPos);
+	return NewTrans;
+}
+
 void HexSystems::ChangeTileMaterial(int index, int x, int y)
 {
 	//Moves current hex tile to underneath the map
-	FVector StartPos = HexStartPos.GetLocation(); //Logs Hex Starting Position
-	FVector HexPos = FVector(StartPos.X - (x * HexGap[1]), StartPos.Y + (y * HexGap[0]), -1.0f); //Logs new position under the map in a vector
-	if (x % 2 == 1) { HexPos.Y += HexGap[2]; } //If hex tile is on an odd numbered row then... Adjust accordingly
-	FTransform NewTrans = HexStartPos; //Logs hex starting scale and rotation
-	NewTrans.SetLocation(HexPos); //Sets the hex position to be under the map
-	HexMaster[x].Tile->UpdateInstanceTransform(y, NewTrans, true, true, true); //Moves the indicated hex tile underneath the map
+	HexMaster[x].Tile->UpdateInstanceTransform(y, ChangeSetUp(-1, x, y), true, true, true); //Moves the indicated hex tile underneath the map
 
 	//Adds new temporary hex tile with chosen material
-	HexPos.Z = 1.0f;
-	NewTrans.SetLocation(HexPos);
-	HexMaster[HexMaster.Num() - 1].Tile->AddInstance(NewTrans); //Adds the hex tile in place of the previous one
+	HexMaster[HexMaster.Num() - 1].Tile->AddInstance(ChangeSetUp(1, x, y)); //Adds the hex tile in place of the previous one
 	HexMaster[HexMaster.Num() - 1].Tile->SetMaterial(0, HexTile->GetMaterial(index)); //Changes new hex tile material to be the chosen material
 	return;
+}
+
+void HexSystems::RevertTileMaterial(int x, int y)
+{
+	//if (HexMaster[HexMaster.Num() - 1].Tile->Instance
+	HexMaster[HexMaster.Num() - 1].Tile->ClearInstances();
+
+	HexMaster[x].Tile->UpdateInstanceTransform(y, ChangeSetUp(1, x, y), true, true, true);
+	return;
+}
+
+int HexSystems::Change(int CPos, int TPos)
+{
+	if (CPos < TPos) { return 1; }
+	else if (CPos > TPos) { return -1; }
+	else { return 0; }
+	return 0;
 }

@@ -5,6 +5,7 @@
 #include <iostream>
 #include "Engine/Engine.h"
 #include "TileInstancer.h"
+#include "Coords.h"
 #include "CoreMinimal.h"
 
 /**
@@ -27,8 +28,12 @@ public:
 
 	void GenerateNewHexGrid();
 	int GetTileByXCoord(FHitResult Hit, int x);
+	TArray<Coords> CalculateMovement(int xTarget, int yTarget, int Speed, int xCPos, int yCPos);
+	FVector NewDest(int x, int y);
 
+	FTransform ChangeSetUp(int Direction, int x, int y);
 	void ChangeTileMaterial(int index, int x, int y);
+	void RevertTileMaterial(int x, int y);
 
 private:
 	AActor* Owner;
@@ -36,4 +41,6 @@ private:
 	FTransform HexStartPos; //Starting position of the first hex tile
 	UStaticMesh* HexTile; //Stores a reference to the hex tile static mesh for later instancing
 	AActor* RefPlane; //Stores a reference to the hex tile static mesh for later instancing
+
+	int Change(int CPos, int TPos);
 };
